@@ -34,10 +34,11 @@ module Extensions
 
     ruby_block "Install plugin: #{name}" do
       block do
-        version = params['version'] ? "/#{params['version']}" : nil
-        url     = params['url']     ? " -url #{params['url']}" : nil
+        version     = params['version'] ? "/#{params['version']}" : nil
+        url         = params['url']     ? " -url #{params['url']}" : nil
+        install_arg = node.elasticsearch[:version].match(/^2./) ? "install" : "-install"
+        command     = "#{node.elasticsearch[:bindir]}/plugin #{install_arg} #{name}#{version}#{url}"
 
-        command = "#{node.elasticsearch[:bindir]}/plugin -install #{name}#{version}#{url}"
         Chef::Log.debug command
 
         raise "[!] Failed to install plugin" unless system command
